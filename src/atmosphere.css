@@ -1,0 +1,126 @@
+/* Decorative weather follows forecast probability, never radar intensity. */
+.rainmai-home{position:relative;isolation:isolate;transition:background-color 1s ease,color .7s ease}
+.weather-atmosphere{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;contain:strict;transition:opacity 1s ease;background:#dce5e7;--cloud-color:rgba(135,157,166,.24)}
+.weather-clear{opacity:0}
+.weather-drizzle{opacity:1;background:linear-gradient(180deg,#b9cbd4 0%,#d9e3e5 45%,#e6ece8 100%)}
+.weather-downpour{opacity:1;background:linear-gradient(170deg,#344c5b 0%,#243d4a 36%,#172a35 78%,#152632 100%);--cloud-color:rgba(10,25,37,.75)}
+.weather-sky-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 65% 8%,#f6faf45c,transparent 52%);opacity:.8}
+.weather-downpour .weather-sky-glow{background:radial-gradient(ellipse at 67% 10%,#cadde229,transparent 49%)}
+.weather-cloud{position:absolute;left:-25%;width:150%;height:65vh;min-height:400px;top:-21vh;background:radial-gradient(ellipse at 16% 46%,var(--cloud-color) 0%,transparent 37%),radial-gradient(ellipse at 55% 25%,var(--cloud-color) 0%,transparent 43%),radial-gradient(ellipse at 84% 55%,var(--cloud-color) 0%,transparent 37%);filter:blur(15px);will-change:transform;animation:cloud-drift 34s ease-in-out infinite alternate}
+.weather-cloud-front{top:-29vh;left:-38%;opacity:.75;animation-duration:27s;animation-direction:alternate-reverse}
+.weather-cloud-low{top:12vh;left:-10%;height:45vh;opacity:.38;animation-duration:46s}
+/* Separate from the sky so frosted cards cannot cover the drops. Dialogs and
+   navigation stay above this decorative, non-interactive layer. */
+.weather-rain-canvas{position:fixed;inset:0;z-index:4;display:block;width:100%;height:100%;pointer-events:none}
+.weather-horizon{position:absolute;inset:0;background:linear-gradient(transparent 65%,#1c35450a)}
+.weather-downpour .weather-horizon{background:linear-gradient(transparent 50%,#07172225)}
+.weather-atmosphere[data-paused=true] .weather-cloud{animation-play-state:paused}
+.hero-atmosphere-controls{display:flex;align-items:center;gap:5px}
+.hero-atmosphere-controls button{height:32px;width:32px;background:transparent;border-radius:50%;display:grid;place-items:center;color:#8b9b78}
+.hero-atmosphere-controls button:hover{background:#7f957916}
+.mascot-message p:empty{display:none}
+
+/* Soft, cool daylight with sparse drifting rain from 60–79%. */
+.rainmai-home.atmosphere-drizzle{background:transparent}
+.rainmai-home.atmosphere-drizzle .site-header{background:#ecf2efb5;border-color:#a5bbc448}
+.atmosphere-drizzle .day-hero{background:linear-gradient(135deg,#edf3edb8,#e6eee6aa);border-color:#b4c8c68c;box-shadow:0 14px 60px #3859680b}
+.atmosphere-drizzle .hero-grain{opacity:.08}
+.atmosphere-drizzle .day-hour{background:#f4f8f1b3;border-color:#b9cbc77a}
+.atmosphere-drizzle .day-hour.selected{background:#e6efdaeb;border-color:#91ae80}
+.atmosphere-drizzle .day-location-icon{background:#e8efdebd;border-color:#b9cbb366}
+.atmosphere-drizzle .character-halo{background:radial-gradient(ellipse,#c0d2c154,transparent 70%);border-color:#c5d5c366}
+.atmosphere-drizzle .stage-note{color:#859e93}
+.atmosphere-drizzle .stage-note svg{stroke:#93ad9c}
+.rainmai-home.atmosphere-drizzle .mobile-nav{background:#e8f0ebed;border-color:#b5c8c04d}
+.atmosphere-drizzle .day-promise,.atmosphere-drizzle .day-hour-note,.atmosphere-drizzle .hourly-help{color:#697f71}
+.atmosphere-drizzle .day-details{border-color:#aebfb844}
+.rainmai-home.atmosphere-drizzle footer{border-color:#aebfb844}
+
+/* A deeper overcast atmosphere from 80%, with frosted readable surfaces. */
+.rainmai-home.atmosphere-downpour{background:transparent;color:#e3edf0}
+.rainmai-home.atmosphere-downpour .site-header{background:#1d344057;border-color:#c3d7df19}
+.atmosphere-downpour .brand{color:#f0f6f3}
+.atmosphere-downpour .brand-icon{color:#bdcec2}
+.rainmai-home.atmosphere-downpour .main-nav button{color:#b2c6cd}
+.rainmai-home.atmosphere-downpour .main-nav .nav-active{color:#e3edd4}
+.rainmai-home.atmosphere-downpour .main-nav .nav-active:after{background:#c3d7b1}
+.atmosphere-downpour .header-search{color:#d0dfdd;border-color:#bfd3d72c;background:#e3f0f405}
+.atmosphere-downpour .day-location{color:#e3eceb}
+.atmosphere-downpour .day-location small{color:#a5bbc2}
+.atmosphere-downpour .day-location strong svg{color:#aec6c8}
+.atmosphere-downpour .day-location-icon{background:#bdd1ca12;border-color:#bdd1ca2b;color:#c2d4b2}
+.atmosphere-downpour .day-current{color:#c3d1c0}
+.atmosphere-downpour .day-current strong{color:#e8f0e8}
+.atmosphere-downpour .day-current small{color:#a8bdc3}
+.atmosphere-downpour .day-refresh{color:#c4d5c2;background:#bdcfca0b;border-color:#c7dada29}
+.atmosphere-downpour .day-hero{background:linear-gradient(150deg,#31495688,#233b4799);border-color:#d2e5ed25;box-shadow:inset 0 1px 0 #eef7f20c,0 15px 65px #07172015}
+.atmosphere-downpour .hero-grain{opacity:.09}
+.atmosphere-downpour .hero-topline{color:#adcad0}
+.atmosphere-downpour .hero-topline .soft-dot{background:#bed3b6}
+.atmosphere-downpour .hero-atmosphere-controls button{color:#bdcfd3}
+.atmosphere-downpour .hero-atmosphere-controls button:hover{background:#e4f0f012}
+.atmosphere-downpour .chance-heading h1{color:#e2edeb}
+.atmosphere-downpour .chance-heading h1>span{color:#a6bdc4;border-color:#aac4cf40}
+.atmosphere-downpour .forecast-period{color:#a7bec6}
+.atmosphere-downpour .forecast-period>span{color:#c3d9bd}
+.atmosphere-downpour .forecast-period>i{background:#bcd2d15c}
+.atmosphere-downpour .chance-number{color:#f0f6f1;text-shadow:0 3px 30px #08182016}
+.atmosphere-downpour .chance-number sup{color:#bdcfb5}
+.atmosphere-downpour .character-halo{border-color:#aac6d216;background:radial-gradient(ellipse,#bad2cf0e,transparent 70%)}
+.atmosphere-downpour .character-halo:after{border-color:#bed2d210}
+.atmosphere-downpour .user-mascot{mix-blend-mode:normal}
+.atmosphere-downpour .user-mascot>.mascot-original-art{filter:invert(1);mix-blend-mode:normal}
+.atmosphere-downpour .stage-note{color:#a5bec0}
+.atmosphere-downpour .stage-note>svg{stroke:#acc4c26b}
+.atmosphere-downpour .doodle-sun{color:#c4d5ba82}
+.atmosphere-downpour .mascot-message h2{color:#e5efdf}
+.atmosphere-downpour .mascot-message p{color:#b5c9c1}
+.atmosphere-downpour .mascot-info-button{color:#c2d6ce}
+.atmosphere-downpour .mascot-info-button:before{background:#bcd3d10b;border-color:#b8d2d03b}
+.atmosphere-downpour .mascot-info-button:hover:before{background:#bcd3d11c;border-color:#b8d2d066}
+.atmosphere-downpour .hero-source{color:#a6bdc5}
+.atmosphere-downpour .hero-source a{color:#c0d6bb}
+.atmosphere-downpour .model-source-dot{background:#b4cbbb}
+.atmosphere-downpour .back-to-now{background:#314c56dd;border-color:#bad0c837;color:#c4d6bc}
+.atmosphere-downpour .section-overline{color:#a5bec6}
+.atmosphere-downpour .day-section-heading h2{color:#e5eeeb}
+.atmosphere-downpour .all-hours{color:#bed4bf}
+.atmosphere-downpour .hourly-help{color:#acbfc5}
+.atmosphere-downpour .day-hour{background:#abc2cd0c;border-color:#c9e0e322;box-shadow:inset 0 1px 0 #c3d7df04}
+.atmosphere-downpour .day-hour:hover{background:#c7ded916;border-color:#c8dec94a}
+.atmosphere-downpour .day-hour.selected{background:#acc5af21;border-color:#b4d19b9c;box-shadow:inset 0 0 0 1px #bcd7ae0c}
+.atmosphere-downpour .day-hour-time{color:#b6c9cb}
+.atmosphere-downpour .day-hour.selected .day-hour-time{color:#dcebd0}
+.atmosphere-downpour .day-hour>svg{color:#b6cbb8}
+.atmosphere-downpour .day-hour>strong{color:#deecd4}
+.atmosphere-downpour .day-hour>strong>span{color:#a7c1a1}
+.atmosphere-downpour .day-hour-rain{color:#a7bdc4}
+.atmosphere-downpour .day-hour-meter{background:#c1d5c817}
+.atmosphere-downpour .day-hour-meter>i{background:#acc495}
+.atmosphere-downpour .day-hour.selected .day-hour-meter>i{background:#d0e3b2}
+.atmosphere-downpour .day-hour-note{color:#a5bfc5}
+.atmosphere-downpour .hour-timezone{color:#9bb6bf}
+.atmosphere-downpour .day-hours{scrollbar-color:#809b8c transparent}
+.atmosphere-downpour .radar-invitation{background:linear-gradient(125deg,#43635b94,#35534791);border-color:#c0d5c52b;box-shadow:inset 0 1px 0 #dae9df09}
+.atmosphere-downpour .radar-invitation-copy>span{color:#bacfbe}
+.atmosphere-downpour .radar-invitation-copy small{color:#b6cfaa}
+.atmosphere-downpour .day-details{border-color:#b9d0d01a;color:#acbec5}
+.atmosphere-downpour .day-details strong{color:#bdcfc2}
+.atmosphere-downpour .day-details svg,.atmosphere-downpour .feels-icon{color:#b5c9b3}
+.atmosphere-downpour .day-details small{color:#9db5bd}
+.atmosphere-downpour .day-promise{color:#a6bfc4}
+.atmosphere-downpour .day-promise>svg{color:#b1c7b3}
+.atmosphere-downpour .day-promise button{color:#bed0b7}
+.rainmai-home.atmosphere-downpour footer{border-color:#adc7d21b;color:#a4bcc4}
+.atmosphere-downpour .footer-brand strong,.atmosphere-downpour .footer-brand>svg{color:#bbd0b5}
+.atmosphere-downpour .footer-brand>span{color:#a5bbc0}
+.atmosphere-downpour footer a,.atmosphere-downpour footer button{color:#b7ccb7}
+.rainmai-home.atmosphere-downpour .mobile-nav{background:#203642ed;border-color:#accad322;box-shadow:0 -5px 20px #10212b12}
+.rainmai-home.atmosphere-downpour .mobile-nav button{color:#96b1b9}
+.rainmai-home.atmosphere-downpour .mobile-nav button.active{color:#d4e5c5}
+.mascot-guide-atmosphere{margin-top:15px;padding:14px 16px;border:1px solid #dce5de;background:#eef3f0;border-radius:10px;display:flex;flex-wrap:wrap;gap:6px 18px;font-family:'Noto Sans Thai',sans-serif;font-size:10px;color:#718778;line-height:1.8}
+.mascot-guide-atmosphere strong{flex-basis:100%;font-weight:500;color:#52705b}
+.mascot-guide-atmosphere p{flex-basis:100%;color:#859589;font-size:9px}
+@keyframes cloud-drift{from{transform:translate3d(-4%,0,0) scale(1)}to{transform:translate3d(5%,3%,0) scale(1.07)}}
+@media(max-width:540px){.hero-atmosphere-controls{gap:1px}.hero-atmosphere-controls button{width:30px;height:30px}.weather-cloud{width:200%;left:-50%;filter:blur(10px)}.weather-cloud-front{left:-70%}.mascot-guide-atmosphere{padding:12px;font-size:9px}.rainmai-home.atmosphere-downpour .mobile-nav{backdrop-filter:blur(12px)}}
+@media(prefers-reduced-motion:reduce){.weather-cloud{animation:none!important;will-change:auto}.hero-atmosphere-controls .weather-animation-toggle{display:none}.weather-atmosphere,.rainmai-home{transition:none!important}}
