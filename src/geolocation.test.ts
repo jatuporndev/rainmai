@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { requestLocation } from './geolocation';
+import { needsLocationTap, requestLocation } from './geolocation';
 
 let success: PositionCallback;
 let failure: PositionErrorCallback;
@@ -9,6 +9,15 @@ beforeEach(() => { vi.useFakeTimers(); getCurrentPosition.mockClear(); vi.stubGl
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 
 describe('location request recovery', () => {
+  it.each([
+    ['Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', 'iPhone', 5, true],
+    ['Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X)', 'iPad', 5, true],
+    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', 'MacIntel', 5, true],
+    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', 'MacIntel', 0, false],
+    ['Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'Win32', 0, false],
+  ])('starts Apple mobile devices from a tap: %s', (userAgent, platform, maxTouchPoints, expected) => {
+    expect(needsLocationTap({ userAgent, platform, maxTouchPoints })).toBe(expected);
+  });
   it('requests immediately and accepts a delayed GPS fix within the deadline', () => {
     const ok = vi.fn(), fail = vi.fn();
     requestLocation(ok, fail);
@@ -55,5 +64,10 @@ describe('location request recovery', () => {
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition() { throw new Error('blocked'); } } });
     requestLocation(vi.fn(), fail);
     expect(fail).toHaveBeenCalledTimes(2); expect(vi.getTimerCount()).toBe(0);
+  });
+  it('preserves the browser explanation without inferring the website setting', () => {
+    const fail = vi.fn(); requestLocation(vi.fn(), fail);
+    failure({ code: 1, message: 'Origin does not have permission to use Geolocation service' } as GeolocationPositionError);
+    expect(fail).toHaveBeenCalledWith(expect.objectContaining({ detail: 'Origin does not have permission to use Geolocation service', message: expect.stringContaining('website setting is Ask') }));
   });
 });

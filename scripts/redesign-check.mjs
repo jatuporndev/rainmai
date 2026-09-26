@@ -82,7 +82,7 @@ denied.on('pageerror', e => errors.push(e.message));
 let weatherCalls = 0;
 denied.on('request', r => { if (r.url().includes('api.open-meteo.com')) weatherCalls++; });
 await denied.goto('http://localhost:5173');
-await expect(denied.locator('.location-notice')).toContainText('Location permission is off');
+await expect(denied.locator('.location-notice')).toContainText('browser did not grant location access');
 await expect(denied.locator('.chance-number')).toHaveText('—');
 expect(weatherCalls).toBe(0);
 await denied.screenshot({ path: 'artifacts/redesign-location-denied.png', fullPage: true });

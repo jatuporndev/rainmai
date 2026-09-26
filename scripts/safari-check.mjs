@@ -18,10 +18,14 @@ async function setup(mode) {
     Object.defineProperty(AbortSignal, 'any', { value: undefined, configurable: true });
     Object.defineProperty(AbortSignal, 'timeout', { value: undefined, configurable: true });
     window.locationMode = mode;
-    if (mode !== 'native') Object.defineProperty(navigator, 'geolocation', { value: {
+    window.locationCalls = [];
+    const nativeLocate = navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);
+    Object.defineProperty(navigator, 'geolocation', { value: {
       getCurrentPosition(ok, fail) {
+        window.locationCalls.push(navigator.userActivation?.isActive ?? null);
+        if (mode === 'native') { nativeLocate(ok, fail); return; }
         window.lateLocation = () => ok({ coords: { latitude: 13.7563, longitude: 100.5018 } });
-        if (window.locationMode === 'permission') fail({ code: 1 });
+        if (window.locationMode === 'permission') fail({ code: 1, message: 'Origin does not have permission to use Geolocation service' });
         if (window.locationMode === 'success') window.lateLocation();
       },
     } });
@@ -34,17 +38,24 @@ async function setup(mode) {
 try {
   const { context, page } = await setup('native');
   await page.goto(base);
+  await expect(page.getByRole('button', { name: 'Use my current location', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => window.locationCalls)).toEqual([]);
+  await page.getByRole('button', { name: 'Use my current location', exact: true }).click();
   await expect(page.locator('.day-location strong')).toHaveText('Current location');
   await expect(page.locator('.chance-number')).toHaveText('65%');
   await expect(page.locator('.day-hour')).toHaveCount(6);
-  console.log('PASS WebKit: native geolocation and weather without AbortSignal.any/timeout.');
+  expect(await page.evaluate(() => window.locationCalls)).toEqual([true]);
+  console.log('PASS WebKit: no automatic iPhone request; one native geolocation request within a user tap; weather without AbortSignal.any/timeout.');
   await context.close();
 
   const denied = await setup('permission');
   await denied.page.goto(base);
-  await expect(denied.page.locator('.location-notice')).toContainText('Location permission is off');
+  await denied.page.getByRole('button', { name: 'Use my current location', exact: true }).click();
+  await expect(denied.page.locator('.location-notice')).toContainText('browser did not grant location access');
+  await denied.page.getByText('Browser response', { exact: true }).click();
+  await expect(denied.page.locator('.location-notice')).toContainText('Origin does not have permission');
   await denied.page.getByText('Location help for iPhone / Safari', { exact: true }).click();
-  await expect(denied.page.locator('.location-permission-help')).toContainText('Safari Websites');
+  await expect(denied.page.locator('.location-permission-help').filter({ hasText: 'Location help for iPhone / Safari' })).toContainText('Safari Websites');
   expect(await denied.page.locator('.location-notice-copy').evaluate(node => node.getBoundingClientRect().width)).toBeGreaterThan(200);
   expect(await denied.page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await denied.page.screenshot({ path: 'artifacts/safari-location-help.png', fullPage: true });
@@ -58,7 +69,7 @@ try {
   const stalled = await setup('silent');
   await stalled.page.clock.install();
   await stalled.page.goto(base);
-  await stalled.page.clock.runFor(100);
+  await stalled.page.getByRole('button', { name: 'Use my current location', exact: true }).click();
   await expect(stalled.page.locator('.day-location small')).toHaveText('FINDING YOU');
   await expect(stalled.page.getByRole('button', { name: 'Choose my area', exact: true })).toBeVisible();
   await stalled.page.clock.runFor(100);
@@ -78,6 +89,7 @@ try {
 
   const manual = await setup('silent');
   await manual.page.goto(base);
+  await manual.page.getByRole('button', { name: 'Use my current location', exact: true }).click();
   await manual.page.getByRole('button', { name: 'Choose my area', exact: true }).click();
   await manual.page.getByRole('button', { name: /Chiang Mai/ }).click();
   await manual.page.evaluate(() => window.lateLocation());
