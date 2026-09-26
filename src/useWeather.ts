@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { fetchRadar, fetchWeather } from './api';
 import { decodeRadar } from './motion';
+import { requestData } from './request';
 import type { Analysis, MotionResult, Place, RadarData, WeatherData } from './types';
 
 async function pixels(url: string, signal: AbortSignal) {
-  const response = await fetch(url, { signal: AbortSignal.any([signal, AbortSignal.timeout(18000)]) });
-  if (!response.ok) throw new Error('Radar image unavailable');
-  const blob = await response.blob();
+  const blob = await requestData(url, response => response.blob(), signal);
   const bitmap = await createImageBitmap(blob);
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 256;

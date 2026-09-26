@@ -5,6 +5,7 @@ A mobile-first React app for rain planning across Thailand. The home screen lead
 ## The daily rain check
 
 - On each visit, the app requests the current browser location. It does not fetch Bangkok weather as a substitute. If GPS is unavailable, it offers manual selection or explicitly labels a previously saved location.
+- Location requests have a 25-second recovery deadline even if the browser never calls back. Retry buttons request location directly from the tap; manual choices and new requests cancel stale callbacks. Permission errors include expandable iPhone/Safari instructions. Weather and radar requests use AbortController with a timeout, without requiring newer AbortSignal static helpers.
 - The main percentage comes directly from Open-Meteo for the displayed hour. Both start and end times are shown. A missing probability displays `—`; a real zero displays `0%`.
 - The four mascots use the owner's original hand-drawn character sheet, unchanged in `public/mascots/original-characters.png`. SVG viewports display each drawing, left to right: the smiling character below 30%, a folded umbrella from 30–59%, an open umbrella from 60–79%, and a raincoat from 80%. Classification follows the rounded percentage visible in the interface, including exact 30/60/80 boundaries. These are presentation choices, not intensity classes or calibrated confidence thresholds. Missing data uses a neutral placeholder. Animation respects reduced-motion preferences.
 - The ⓘ button beside the character opens a guide showing all four original drawings and their ranges, with the currently displayed category highlighted. Opening the guide does not change the selected forecast.
@@ -63,6 +64,7 @@ node scripts/browser-check.mjs
 node scripts/state-check.mjs
 node scripts/mascot-check.mjs
 node scripts/atmosphere-check.mjs
+node scripts/safari-check.mjs
 ```
 
 The first runs `scripts/redesign-check.mjs`: live GPS-based weather, on-demand radar, all mascot poses, hourly selection, missing probabilities, location denial, saved-location labeling, late GPS responses, and mobile rendering. The second tests radar coverage, projection, and failure states with isolated browser-network fixtures. Test fixtures are never bundled into the app. Screenshots and results are saved in ignored `artifacts/`.
@@ -70,6 +72,8 @@ The first runs `scripts/redesign-check.mjs`: live GPS-based weather, on-demand r
 The mascot check verifies the original artwork checksum, exact 30/60/80% transitions, the guide's four images and current-category highlight, keyboard close/focus restoration, and mobile layouts. Its screenshots use controlled test probabilities rather than live weather.
 
 The atmosphere check verifies the light/heavy visual boundaries, animated canvas pixels and particle budgets, pause/resume, modal pausing, reduced-motion behavior, mobile sizing, and removal of effects when data is missing.
+
+The Safari check requires `npx playwright install webkit`. It uses WebKit with an iPhone viewport and tests native browser geolocation with supplied test coordinates, older API compatibility, permission recovery, stalled callbacks, and manual-choice races. It does not replace testing location permissions on a physical iPhone. Set `RAINMAI_TEST_URL` to check a deployed build instead of localhost; forecast fixtures remain confined to the test browser.
 
 ## Stack
 

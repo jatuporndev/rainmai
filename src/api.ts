@@ -1,4 +1,5 @@
 import type { Place, RadarData, WeatherData } from './types';
+import { requestData } from './request';
 
 export const PLACES: Place[] = [
   { name: 'Bangkok', region: 'Bangkok Metropolis', lat: 13.7563, lon: 100.5018 },
@@ -10,9 +11,7 @@ export const PLACES: Place[] = [
 ];
 
 export async function getJSON<T>(url: string, signal?: AbortSignal): Promise<T> {
-  const response = await fetch(url, { signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(18000)]) : AbortSignal.timeout(18000) });
-  if (!response.ok) throw new Error(`The data provider returned ${response.status}. Please try again shortly.`);
-  return response.json();
+  return requestData(url, response => response.json(), signal);
 }
 
 export async function fetchRadar(signal: AbortSignal) {
